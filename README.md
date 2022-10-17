@@ -48,6 +48,7 @@ symfony server:start
  ```bash
 symfony php bin/phpunit tests
 ```
+ * You can find the Postman collection from leaseweb-backend/postman/leaseweb.postman_collection.json
 
 ## Improvements to be done if time permits
 
