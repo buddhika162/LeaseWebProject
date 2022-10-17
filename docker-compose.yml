@@ -1,0 +1,54 @@
+version: "3.4"
+
+services:
+  leaseweb_client:
+    build:
+      context: ./leaseweb-client
+      dockerfile: ClientDockerFile
+    ports:
+      - 4200:8080
+    volumes:
+      - ./leaseweb-client:/client
+      - /client/node_modules/
+    container_name: leaseweb_client
+
+  leaseweb_php:
+    build:
+      context: ./php
+      dockerfile: PHPDockerFile
+    ports:
+      - 9000:9000
+    volumes:
+      - ./leaseweb-backend/:/var/www/html
+    container_name: leaseweb_php
+
+  leaseweb_nginx:
+    image: nginx:alpine
+    ports:
+      - 8080:8000
+    volumes:
+      - ./leaseweb-backend/:/var/www/html
+      - ./nginx/site.conf:/etc/nginx/conf.d/default.conf
+    container_name: leaseweb_nginx
+    links:
+      - leaseweb_php
+
+  leaseweb_mariadb:
+    image: mariadb:10.7
+    ports:
+      - 3306:3306
+    volumes:
+      - leaseweb-mariadb:/var/lib/mysql
+    container_name: leaseweb_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: leaseweb
+
+  leaseweb_adminer:
+    image: adminer
+    ports:
+      - 9001:8080
+    container_name: leaseweb_adminer
+
+volumes:
+  leaseweb-mariadb:
