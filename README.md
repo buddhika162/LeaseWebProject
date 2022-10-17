@@ -34,6 +34,10 @@ composer install
  ```bash
 php bin/console doctrine:migrations:migrate
 ```
+ * Load sample data by running
+  ```bash
+ php bin/console doctrine:fixtures:load
+ ```
  * Strat server
  ```bash
 symfony server:start
