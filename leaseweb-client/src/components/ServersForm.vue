@@ -5,38 +5,48 @@
     <div class="field">
       <div class="control">
         <label for="assetId">Asset Id</label>
-        <input id="assetId" class="input" type="assetId" placeholder="enter asset Id" v-model="assetId" @keydown="errors = ''">
+        <input id="assetId" class="input" type="assetId" placeholder="enter asset Id" v-model="server.assetId" @keydown="errors = ''">
 
         <label for="name">Name</label>
-        <input id="name" class="input" type="name" placeholder="enter name" v-model="name" @keydown="errors = ''">
+        <input id="name" class="input" type="name" placeholder="enter name" v-model="server.name" @keydown="errors = ''">
 
         <label for="brand">Brand</label>
-        <input id="brand" class="input" type="brand" placeholder="enter brand" v-model="brand" @keydown="errors = ''">
+        <input id="brand" class="input" type="brand" placeholder="enter brand" v-model="server.brand" @keydown="errors = ''">
         <div class="col-sm-6">
-          <label for="brice">price</label>
-          <input id="price" class="input" type="price" placeholder="enter price" v-model="price" @keydown="errors = ''">
+          <label for="price">Price</label>
+          <input id="price" class="input" type="price" placeholder="enter price" v-model="server.price" @keydown="errors = ''">
         </div>
 
       </div>
     </div>
-    <div>
-      <div>Selected: {{ selected }}</div>
-      <div>
-        <select v-model="selected" multiple>
-          <template v-for="ramModule in ramModules" :key="ramModule.id">
-            <option>
-              <span>{{ramModule.type}} - </span>
-              <span>{{ramModule.size}} - GB</span>
-            </option>
-          </template>
-        </select>
-      </div>
-      <div class="col-sm-12">
-        <button class="btn" id="addRamModule" @click="addRamModule()">Add Ram Modules</button>
-      </div>
-    </div>
+    <div class="field">
+      <table>
+        <tr>
+          <td class="dropdownTd">
+            <div>
+              <select v-model="server.ramModules" multiple>
+                <template v-for="ramModule in ramModules" :key="ramModule.id">
+                  <option :value="ramModule.id">
+                    <span>{{ramModule.type}} - </span>
+                    <span>{{ramModule.size}} GB</span>
+                  </option>
+                </template>
+              </select>
+            </div>
+            <div>
 
-    <button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }">Add Server</button>
+            </div>
+          </td>
+          <td class="selectedValueTD">
+          </td>
+        </tr>
+      </table>
+
+
+
+    </div>
+    <button id="serverListBtn" href="/"  class="button is-primary" >Server List</button>
+    <button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }" @click="addServer">Add Server</button>
   </form>
 </template>
 
@@ -46,28 +56,35 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      assetId: '',
-      name: '',
-      brand: '',
-      price: '',
+      server : {
+        assetId: '',
+        name: '',
+        brand: '',
+        price: '',
+        ramModules:[]
+      },
+
       errors: '',
       isLoading: false,
       ramModules: [],
-      selected:[]
     }
   },
   async created () {
-    const response = await axios.get('http://localhost:8000/ramModules')
+    const response = await axios.get('http://localhost:8080/ramModules')
     this.ramModules = response.data
   },
   methods: {
     onSubmit() {
       this.isLoading = true
-      this.postMovie()
     },
-    async postMovie() {
-      axios.post('http://localhost:8000/servers', this.$data)
+    async addServer() {
+      axios.post('http://localhost:8080/servers', this.server)
           .then(response => {
+            this.server.assetId = "";
+            this.server.name = "";
+            this.server.brand = "";
+            this.server.price = "";
+            this.server.ramModules = [];
             this.title = ''
             this.isLoading = false
             this.$emit('completed', response.data)
@@ -77,25 +94,20 @@ export default {
             this.errors = error.response.data.errors
             this.isLoading = false
           })
-    },
-    addRamModule() {
-      if (this.quantity && this.selectedRamId) {
-        let selectedRam = this.rams.find((element) => {
-          return this.selectedRamId === element.id
-        })
-        selectedRam.quantity = this.quantity
-        this.selectedRams.push(selectedRam)
-        this.selectedRamIds.push(this.selectedRamId)
-        this.quantity = null
-        this.selectedRamId = null
-      } else {
-        if (!this.quantity) {
-          alert('Please add a valid quantity')
-        } else if (!this.selectedRamId) {
-          alert('Please select a ram module')
-        }
-      }
-    },
+    }
   }
 }
 </script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style scoped>
+.field {
+  margin-left: 40px;
+  margin-right: 40px;
+}
+.dropdownTd {
+  width: 400px;
+}
+#serverListBtn{
+  margin-right: 40px;
+}
+</style>

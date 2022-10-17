@@ -1,7 +1,5 @@
 <template>
   <div id="nav">
-    <router-link to="/">All Servers</router-link> |
-    <router-link to="/add">Add Server</router-link>
   </div>
   <router-view/>
 </template>

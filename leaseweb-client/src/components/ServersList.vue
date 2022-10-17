@@ -22,14 +22,15 @@
             </div>
           </template>
         </td>
-        <td ></td>
+        <td >
+          <button class="btn" id="deleteServer" @click="deleteServer(server.assetId)">Delete</button>
+        </td>
       </tr>
     </template>
     </tbody>
   </table>
-    <movie-form @completed="addMovie"></movie-form>
 
-    <a class="button is-primary">Add Server</a>
+    <a href="/add" class="button is-primary">Add Server</a>
   </div>
 </template>
 
@@ -43,8 +44,26 @@ export default {
     }
   },
   async created () {
-    const response = await axios.get('http://localhost:8000/servers')
+    const response = await axios.get('http://localhost:8080/servers')
     this.servers = response.data
+  },
+  methods: {
+    async deleteServer(assetId) {
+      axios.delete('http://localhost:8080/servers', {
+        'data' : {
+          "assetIds": [assetId]
+        }
+
+      })
+          .then(() => {
+           this.servers = this.servers.filter(server=>server.assetId != assetId)
+          })
+          .catch(error => {
+            // handle authentication and validation errors here
+            this.errors = error.response.data.errors
+            this.isLoading = false
+          })
+    }
   }
 }
 </script>
