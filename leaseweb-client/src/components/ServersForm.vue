@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSubmit">
+  <form>
     <span class="help is-danger" v-text="errors"></span>
 
     <div class="field">
@@ -45,7 +45,7 @@
 
 
     </div>
-    <button id="serverListBtn" href="/"  class="button is-primary" >Server List</button>
+    <a id="serverListBtn" href="/"  class="button is-primary" >Server List</a>
     <button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }" @click="addServer">Add Server</button>
   </form>
 </template>
@@ -74,10 +74,8 @@ export default {
     this.ramModules = response.data
   },
   methods: {
-    onSubmit() {
-      this.isLoading = true
-    },
     async addServer() {
+      this.isLoading = true
       axios.post('http://localhost:8080/servers', this.server)
           .then(response => {
             this.server.assetId = "";
@@ -85,9 +83,9 @@ export default {
             this.server.brand = "";
             this.server.price = "";
             this.server.ramModules = [];
-            this.title = ''
-            this.isLoading = false
-            this.$emit('completed', response.data)
+            this.title = '';
+            this.isLoading = false;
+            this.$emit('completed', response.data);
           })
           .catch(error => {
             // handle authentication and validation errors here
