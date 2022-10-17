@@ -1,37 +1,37 @@
 version: "3.4"
 
 services:
-  erp_client:
+  leaseweb_client:
     build:
-      context: ./client
-      dockerfile: Dockerfile
+      context: ./leaseweb-client
+      dockerfile: ClientDockerFile
     ports:
-      - 4200:4200
+      - 4200:8080
     volumes:
-      - ./client:/client
+      - ./leaseweb-client:/client
       - /client/node_modules/
-    container_name: erp_client
+    container_name: leaseweb_client
 
   leaseweb_php:
     build:
       context: ./php
-      dockerfile: Dockerfile
+      dockerfile: PHPDockerFile
     ports:
       - 9000:9000
     volumes:
-      - ./server/:/server
-    container_name: erp_php
+      - ./leaseweb-backend/:/var/www/html
+    container_name: leaseweb_php
 
   leaseweb_nginx:
     image: nginx:alpine
     ports:
-      - 8080:80
+      - 8080:8000
     volumes:
-      - ./server/:/server
+      - ./leaseweb-backend/:/var/www/html
       - ./nginx/site.conf:/etc/nginx/conf.d/default.conf
-    container_name: erp_nginx
+    container_name: leaseweb_nginx
     links:
-      - erp_php
+      - leaseweb_php
 
   leaseweb_mariadb:
     image: mariadb:10.7
